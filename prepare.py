@@ -50,45 +50,27 @@ import acquire
 
 # ## Inspect and Summarize
 
-# In[2]:
-
 
 # Importing our data
 df = acquire.get_titanic_data()
-
-
-# In[3]:
 
 
 # Take a look at the data
 df.head()
 
 
-# In[68]:
-
-
 df[df['embark_town'].isna()]
 
-
-# In[4]:
 
 
 df.info()
 
 
-# In[5]:
-
 
 pd.crosstab(df['class'], df.pclass)
 
 
-# In[6]:
-
-
 pd.crosstab(df.sibsp, df.alone)
-
-
-# In[7]:
 
 
 pd.crosstab(df.embarked, df.embark_town)
@@ -101,43 +83,23 @@ pd.crosstab(df.embarked, df.embark_town)
 # - embarked and embark_town represent the same data (we will need to decide which one is worth keeping)
 # - Some people don't have siblings or spouses but are not alone
 
-# In[8]:
-
 
 df.describe()
-
-
-# In[9]:
 
 
 df.columns
 
 
-# In[10]:
-
-
 numcols = [col for col in df.columns if df[col].dtype != 'O']
-
-
-# In[11]:
 
 
 numcols
 
 
-# In[12]:
-
-
 catcols = [col for col in df.columns if df[col].dtype == 'O']
 
 
-# In[13]:
-
-
 catcols
-
-
-# In[14]:
 
 
 # Describe the object columns
@@ -147,9 +109,6 @@ for col in catcols:
     print("---------")
     print(df[col].value_counts(normalize=True, dropna=False))
     print("======================")
-
-
-# In[15]:
 
 
 # Histograms of numeric columns
@@ -172,26 +131,15 @@ for col in numcols:
 
 # ## Clean
 
-# In[16]:
-
 
 # Drop duplicates
 df.drop_duplicates(inplace=True)
 
 
-# In[17]:
-
-
 df.shape # No duplicates after all
 
 
-# In[18]:
-
-
 columns_to_drop = ['embarked', 'class', 'passenger_id', 'deck']
-
-
-# In[19]:
 
 
 data = df.drop(columns = columns_to_drop) # Saved this change to a new variable so that I don't mess up the original data
@@ -200,24 +148,15 @@ data = df.drop(columns = columns_to_drop) # Saved this change to a new variable 
 # #### Encoding: Turning Categorical Values into Boolean Values (0,1)
 #  - We have two options: simple encoding or one-hot encoding
 
-# In[20]:
-
-
 # Encoding steps
-# 1. Make a dataframe out of "dummy" coluns
+# 1. Make a dataframe out of "dummy" columns
 # 2. Concatenate our dummy dataframe to our original dataframe
 
 dummy_df = pd.get_dummies(data[['sex', 'embark_town']], dummy_na=False, drop_first=[True, True]) # you need as many Trues (or Falses) for as many columns that you're asking about
 # get_dummies makes a whole new dataframe that we'll need to append on the end
 
 
-# In[21]:
-
-
 dummy_df
-
-
-# In[22]:
 
 
 # Concatenate my dummy_df to my data
@@ -227,8 +166,6 @@ data
 
 
 # ## Putting our Work Into a Function
-
-# In[23]:
 
 
 def clean_titanic_data(df):
@@ -248,23 +185,15 @@ def clean_titanic_data(df):
     return df.drop(columns=['sex', 'embark_town'])
 
 
-# In[24]:
-
-
 df = acquire.get_titanic_data()
 clean_df = clean_titanic_data(df)
 clean_df
-
-
-# In[25]:
 
 
 clean_df.info()
 
 
 # ## Train, Validate, Test Split
-
-# In[40]:
 
 
 train, test = train_test_split(clean_df, 
@@ -275,19 +204,10 @@ train, test = train_test_split(clean_df,
 # random_state lets other people get the same result when running the code
 
 
-# In[30]:
-
-
 train.shape
 
 
-# In[31]:
-
-
 test.shape
-
-
-# In[41]:
 
 
 # third set can be taken from either train or test sets but preferably take it out
@@ -298,38 +218,19 @@ train, validate = train_test_split(train,
                                     stratify = train.survived,
                                     random_state=1234)
 
-
-# In[34]:
-
-
 train.shape
-
-
-# In[37]:
 
 
 validate.shape
 
 
-# In[38]:
-
-
 test.shape
-
-
-# In[42]:
 
 
 train.head()
 
 
-# In[43]:
-
-
 validate.head()
-
-
-# In[44]:
 
 
 test.head()
@@ -346,13 +247,8 @@ test.head()
 
 # 1. Create the `SimpleImputer` object, which we will store in the variable `imputer`. In the creation of the object, we will specify the strategy to use (`mean`, `median`, `most_frequent`). Essentially, this is creating the instructions and assigning them to a variable we will reference.  
 
-# In[45]:
-
 
 imputer = SimpleImputer(strategy='mean', missing_values=np.nan)
-
-
-# In[46]:
 
 
 type(imputer)
@@ -360,21 +256,14 @@ type(imputer)
 
 # 2. `Fit` the imputer to the columns in the training df.  This means that the imputer will determine the `most_frequent` value, or other value depending on the `strategy` called, for each column.   
 
-# In[49]:
-
 
 imputer = imputer.fit(train[['age']]) # double brackets to make it a dataframe
 
 
 # 3. It will store that value in the imputer object to use upon calling `transform.` We will call `transform` on each of our samples to fill any missing values.  
 
-# In[50]:
-
 
 train[['age']] = imputer.transform(train[['age']])
-
-
-# In[51]:
 
 
 train.info()
@@ -382,25 +271,15 @@ train.info()
 
 # Create a function that will run through all of these steps, when I provide a train and test dataframe, a strategy, and a list of columns. 
 
-# In[54]:
 
 
 train.age  # imputer is smart enough to only overwrite the null values
 
 
-# In[57]:
-
-
 validate[['age']] = imputer.transform(validate[['age']])
 
 
-# In[58]:
-
-
 test[['age']] = imputer.transform(test[['age']])
-
-
-# In[60]:
 
 
 def impute_age(train, validate, test):
@@ -415,9 +294,7 @@ def impute_age(train, validate, test):
     return train, validate, test
 
 
-# Blend the clean, split and impute functions into a single prep_data() function. 
-
-# In[66]:
+# Blend the clean, split and impute functions into a single prep_data() function.
 
 
 def prep_titanic_data(df):
@@ -434,41 +311,85 @@ def prep_titanic_data(df):
     return train, validate, test
 
 
-# In[67]:
-
-
 df = acquire.get_titanic_data()
 train, validate, test = prep_titanic_data(df)
 train.head()
-
-
-# In[ ]:
 
 
 # Can import it late to clean code
 # Can also make one that does everything
 
 
-# ## Exercises
-# 
+# Exercises
+ 
 # The end product of this exercise should be the specified functions in a python script named `prepare.py`.
 # Do these in your `classification_exercises.ipynb` first, then transfer to the prepare.py file. 
-# 
+ 
 # This work should all be saved in your local `classification-exercises` repo. Then add, commit, and push your changes.
-# 
+ 
 # Using the Iris Data:  
-# 
-# 1. Use the function defined in `acquire.py` to load the iris data.  
-# 
-# 1. Drop the `species_id` and `measurement_id` columns.  
-# 
-# 1. Rename the `species_name` column to just `species`.  
-# 
-# 1. Create dummy variables of the species name. 
-# 
-# 1. Create a function named `prep_iris` that accepts the untransformed iris data, and returns the data with the transformations above applied.  
+ 
+# Use the function defined in `acquire.py` to load the iris data.  
+ 
+# Drop the `species_id`. Rename the `species_name` column to just `species`. Create dummy variables of the species name. 
+def clean_iris(df):
 
-# In[ ]:
+    '''Prepares acquired Iris data for exploration'''
+
+    # drop column using .drop(columns=column_name)
+    df = df.drop(columns='species_id')
+
+    # remame column using .rename(columns={current_column_name : replacement_column_name})
+    df = df.rename(columns={'species_name':'species'})
+
+    # create dummies dataframe using .get_dummies(column_name,not dropping any of the dummy columns)
+    dummy_df = pd.get_dummies(df['species'], drop_first=False)
+
+    # join original df with dummies df using .concat([original_df,dummy_df], join along the index)
+    df = pd.concat([df, dummy_df], axis=1)
+
+    return df
+
+
+def split_iris(df):
+    '''
+    take in a DataFrame and return train, validate, and test DataFrames; stratify on species.
+    return train, validate, test DataFrames.
+    '''
+
+    # splits df into train_validate and test using train_test_split() stratifying on species to get an even mix of each species
+    train_validate, test = train_test_split(df, test_size=.2, random_state=123, stratify=df.species)
+
+    # splits train_validate into train and validate using train_test_split() stratifying on species to get an even mix of each species
+    train, validate = train_test_split(train_validate, 
+                                       test_size=.3, 
+                                       random_state=123, 
+                                       stratify=train_validate.species)
+    return train, validate, test
+
+
+# Create a function named `prep_iris` that accepts the untransformed iris data, and returns the data with the transformations above applied.
+def prep_iris(df):
+    '''Prepares acquired Iris data for exploration'''
+
+    # drop column using .drop(columns=column_name)
+    df = df.drop(columns='species_id')
+
+    # remame column using .rename(columns={current_column_name : replacement_column_name})
+    df = df.rename(columns={'species_name':'species'})
+
+    # create dummies dataframe using .get_dummies(column_name,not dropping any of the dummy columns)
+    dummy_df = pd.get_dummies(df['species'], drop_first=False)
+
+    # join original df with dummies df using .concat([original_df,dummy_df], join along the index)
+    df = pd.concat([df, dummy_df], axis=1)
+
+    # split data into train/validate/test using split_data function
+    train, validate, test = split_iris(df)
+
+    return train, validate, test 
+
+
 
 
 
