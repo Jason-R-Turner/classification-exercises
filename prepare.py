@@ -168,7 +168,7 @@ data
 # ## Putting our Work Into a Function
 
 
-def clean_titanic_data(df):
+def clean_titanic(df):
     '''
     Takes in a titianic dataframe and returns a cleaned dataframe
     Arguments: df = a pandas dataframe with the expected feature names and columns
@@ -186,7 +186,7 @@ def clean_titanic_data(df):
 
 
 df = acquire.get_titanic_data()
-clean_df = clean_titanic_data(df)
+clean_df = clean_titanic(df)
 clean_df
 
 
@@ -297,8 +297,8 @@ def impute_age(train, validate, test):
 # Blend the clean, split and impute functions into a single prep_data() function.
 
 
-def prep_titanic_data(df):
-    df = clean_titanic_data(df)
+def prep_titanic(df):
+    df = clean_titanic(df)
     train, test = train_test_split(df, 
                                train_size = 0.8, 
                                stratify = df.survived, 
@@ -312,7 +312,7 @@ def prep_titanic_data(df):
 
 
 df = acquire.get_titanic_data()
-train, validate, test = prep_titanic_data(df)
+train, validate, test = prep_titanic(df)
 train.head()
 
 
@@ -333,8 +333,9 @@ train.head()
  
 # Drop the `species_id`. Rename the `species_name` column to just `species`. Create dummy variables of the species name. 
 def clean_iris(df):
-
-    '''Prepares acquired Iris data for exploration'''
+    '''
+    Prepares acquired Iris data for exploration
+    '''
 
     # drop column using .drop(columns=column_name)
     df = df.drop(columns='species_id')
@@ -372,19 +373,8 @@ def split_iris(df):
 def prep_iris(df):
     '''Prepares acquired Iris data for exploration'''
 
-    # drop column using .drop(columns=column_name)
-    df = df.drop(columns='species_id')
+    df = clean_iris(df)
 
-    # remame column using .rename(columns={current_column_name : replacement_column_name})
-    df = df.rename(columns={'species_name':'species'})
-
-    # create dummies dataframe using .get_dummies(column_name,not dropping any of the dummy columns)
-    dummy_df = pd.get_dummies(df['species'], drop_first=False)
-
-    # join original df with dummies df using .concat([original_df,dummy_df], join along the index)
-    df = pd.concat([df, dummy_df], axis=1)
-
-    # split data into train/validate/test using split_data function
     train, validate, test = split_iris(df)
 
     return train, validate, test 
