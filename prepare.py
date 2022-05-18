@@ -298,6 +298,9 @@ def impute_age(train, validate, test):
 
 
 def prep_titanic(df):
+    '''
+    Prepares acquired Titanic data for exploration
+    '''
     df = clean_titanic(df)
     train, test = train_test_split(df, 
                                train_size = 0.8, 
