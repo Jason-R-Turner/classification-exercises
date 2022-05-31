@@ -381,9 +381,3 @@ def prep_iris(df):
     train, validate, test = split_iris(df)
 
     return train, validate, test 
-
-
-
-
-
-
